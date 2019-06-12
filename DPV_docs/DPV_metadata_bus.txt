@@ -1,0 +1,34 @@
+/****************************************/
+/* EXTENDED TUSER BUS [256b] */
+/****************************************/
+
+<16b> [255:240] dma_q_size
+<16b> [239:224] nf3_q_size
+<16b> [223:208] nf2_q_size
+<16b> [207:192] nf1_q_size
+<16b> [191:176] nf0_q_size
+       
+<8b>  [175:168] send_dig_to_cpu
+<8b>  [167:160] drop
+
+<8b>  [159:152] dst_port
+<8b>  [151:144] src_port
+<16b> [143:128] pkt_len
+
+<8b>  [127:120] meta_0  	(FLAGS)
+<8b>  [119:112] meta_1 		(FREE)
+<8b>  [111:104] meta_2 		(FREE)
+<8b>  [103:96]  meta_3 		(FREE)
+<8b>  [95:88]   meta_4 		(FREE)
+<8b>  [87:80]   meta_5 		(FREE)
+<8b>  [79:72]   meta_6 		(FREE)
+<8b>  [71:64]   meta_7 		(FREE)
+
+<8b>  [63:56]   meta_8 		(FREE)
+<8b>  [55:48]   meta_9 		(FREE)
+<8b>  [47:40]   meta_10 	(FREE)
+<8b>  [39:32]   meta_11 	(FREE)
+<8b>  [31:24]   meta_12 	(FREE)
+<8b>  [23:16]   meta_13 	(FREE)
+<8b>  [15:8]    meta_14 	(FREE)
+<8b>  [7:0]     meta_15 	(FREE)
