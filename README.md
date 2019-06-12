@@ -90,6 +90,35 @@ export SUME_FOLDER=<PATH TO paper15_DPV REPO>
 
 source "DPV.sh"
 
+### Edit framework
+
+Tested program (data plane, table entries):
+
+```
+$P4_PROJECT_DIR/ppl_src/ppl_p4.p4
+$P4_PROJECT_DIR/ppl_src/cmds.txt
+```
+
+Packet generator (data plane, table entries):
+
+```
+$P4_PROJECT_DIR/dbg_src/ppl_p4.p4
+$P4_PROJECT_DIR/dbg_src/cmds.txt
+```
+
+Packet checker (data plane, table entries):
+
+```
+$P4_PROJECT_DIR/ver_src/ppl_p4.p4
+$P4_PROJECT_DIR/ver_src/cmds.txt
+```
+
+### Edit test script
+
+```
+$P4_PROJECT_DIR/tests/test_gen.py
+```
+
 ### Compiling DPV
 
 Compile library:
@@ -121,6 +150,14 @@ Program switch and tables. Run command:
 progswitch
 ```
 
-Edit test scripts:
+Run test:
 
-Launch test:
+```
+python $P4_PROJECT_DIR/tests/test_gen.py
+```
+
+Command for generating test packets in hardware:
+
+```
+genpkts --help
+```
