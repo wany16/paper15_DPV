@@ -32,15 +32,15 @@
 #
 
 # CHOOSE DATA PLANE UNDER TEST (P4 data plane: nf_sume_sdnet_ppl):
-export SWITCH_PPL=switch_output_port_lookup
-# export SWITCH_PPL=nf_sume_sdnet_ppl
+#export SWITCH_PPL=switch_output_port_lookup
+export SWITCH_PPL=nf_sume_sdnet_ppl
 
 export P4_PROJECT_NAME=DPV
 export P4_PPL_NAME=ppl_p4
 export P4_DBG_NAME=dbg_p4
 export P4_VER_NAME=ver_p4
 export NF_PROJECT_NAME=simple_sume_switch
-export SUME_FOLDER=~/DPV
+export SUME_FOLDER=~/paper15_DPV
 export SUME_SDNET=${SUME_FOLDER}/contrib-projects/sume-sdnet-switch
 export P4_PROJECT_DIR=${SUME_SDNET}/projects/${P4_PROJECT_NAME}
 export LD_LIBRARY_PATH=${SUME_SDNET}/sw/sume:${LD_LIBRARY_PATH}
