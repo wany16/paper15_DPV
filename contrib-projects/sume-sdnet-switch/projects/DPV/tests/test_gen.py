@@ -77,16 +77,11 @@ print("")
 
 test_mod.progsw()
 
-# training
-test_mod.genpkts("1", "I-0", "D-100", "128", "34", "H-11", "H-FF", "H-11", "H-22", "I-0", "I-0", "I-0", "I-0", "I-0", "I-0", "H-1", "I-0", "I-0", "I-0", "I-0")
-test_mod.genpkts("1", "I-0", "D-100", "128", "34", "H-22", "H-FF", "H-22", "H-11", "I-0", "I-0", "I-0", "I-0", "I-0", "I-0", "H-4", "I-0", "I-0", "I-0", "I-0")
+# 10 64b packets
+test_mod.genpkts("10", "I-0", "D-100", "64", "34", "H-11", "H-FF", "H-11", "H-22", "I-0", "I-0", "I-0", "I-0", "I-0", "I-0", "H-1", "I-0", "I-0", "I-0", "I-0")
 
-test_mod.clrcnt()
-
-test_mod.clrregs(ZA,FA,SA,TA)
-
-# full window
-test_mod.genpkts("1000", "XY", "D-100", "128", "54", "H-11", "H-22", "H-11", "H-22", "H-88", "H-EF", "H-11", "H-22", "H-0", "H-0", "H-1", "H-0", "H-0", "H-0", "H-0")
+# 10 256b packets
+test_mod.genpkts("10", "I-0", "D-100", "256", "34", "H-11", "H-FF", "H-11", "H-22", "I-0", "I-0", "I-0", "I-0", "I-0", "I-0", "H-1", "I-0", "I-0", "I-0", "I-0")
 
 test_mod.colres(timestamp, results, ZA,FA,SA,TA)
 
@@ -128,9 +123,9 @@ as_list = [
 ### 										USER CODE BEGIN
 #########################################################################################################
 
-("ipg_packets_out", "EQ", 0),
-("nf0_packets_out", "EQ", "nf0_packets_out"),
-("nf0_packets_out", "EQ", "nf1_packets_out")
+("ipg_packets_out", "EQ", 20),
+("nf0_packets_out", "EQ", 10),
+("nf2_packets_out", "EQ", 10)
 
 #########################################################################################################
 ### 										USER CODE END

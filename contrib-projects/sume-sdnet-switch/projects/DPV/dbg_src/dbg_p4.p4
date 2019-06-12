@@ -26,14 +26,6 @@
 
 // USEFUL DEFINITIONS
 #define IPV4_TYPE 0x0800
-#define CST_TYPE 0xCCCC
-#define VLAN_TYPE 0x8100
-#define NDP_TYPE 0xC7
-#define TCP_TYPE 0x06
-#define ETH_HDR_SIZE 14
-#define IPV4_HDR_SIZE 20
-#define VLAN_HDR_SIZE 4
-#define CRC_FCS 4
 #define PORT_SIZE 8
 #define PORTS_SIZE 16
 
@@ -76,9 +68,9 @@
 #define ETHERNET_SIZEB 14
 #define ETHERNET_SIZEb (ETHERNET_SIZEB*8)
 
-header Ethernet_h { 
-    bit<48> dstAddr; 
-    bit<48> srcAddr; 
+header Ethernet_h {
+    bit<48> dstAddr;
+    bit<48> srcAddr;
     bit<16> etherType;
 }
 
@@ -92,15 +84,15 @@ header Ethernet_h {
 header IPv4_h {
     bit<4> version;
     bit<4> ihl;
-    bit<8> diffserv; 
-    bit<16> totalLen; 
-    bit<16> identification; 
+    bit<8> diffserv;
+    bit<16> totalLen;
+    bit<16> identification;
     bit<3> flags;
-    bit<13> fragOffset; 
+    bit<13> fragOffset;
     bit<8> ttl;
-    bit<8> protocol; 
-    bit<16> hdrChecksum; 
-    bit<32> srcAddr; 
+    bit<8> protocol;
+    bit<16> hdrChecksum;
+    bit<32> srcAddr;
     bit<32> dstAddr;
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +114,7 @@ struct digest_data_t {
 }
 
 // user defined metadata: can be used to shared information between
-// TopParser, TopPipe, and TopDeparser 
+// TopParser, TopPipe, and TopDeparser
 struct user_metadata_t {
     bit<8>  unused;
 }
@@ -133,8 +125,8 @@ struct user_metadata_t {
 
 // Parser Implementation
 @Xilinx_MaxPacketRegion(16384)
-parser TopParser_dbg(packet_in b, 
-                 out Parsed_packet p, 
+parser TopParser_dbg(packet_in b,
+                 out Parsed_packet p,
                  out user_metadata_t user_metadata,
                  out digest_data_t digest_data,
                  inout sume_metadata_t sume_metadata) {
@@ -151,17 +143,13 @@ parser TopParser_dbg(packet_in b,
 
 // match-action pipeline
 control TopPipe_dbg(inout Parsed_packet p,
-                inout user_metadata_t user_metadata, 
-                inout digest_data_t digest_data, 
+                inout user_metadata_t user_metadata,
+                inout digest_data_t digest_data,
                 inout sume_metadata_t sume_metadata) {
 
-	// COUNTER
-	bit<BUS_WIDTH> count_in;
-	bit<BUS_WIDTH> count_out;
-  
-    // PSEUDORANDOM DATA
-    //bit<RND_WIDTH> rnd_in;
-    //bit<RND_WIDTH> rnd_out;
+  	// COUNTER
+  	bit<BUS_WIDTH> count_in;
+  	bit<BUS_WIDTH> count_out;
 
     //************************************************
     // TABLE: DONOTHING
@@ -186,52 +174,34 @@ control TopPipe_dbg(inout Parsed_packet p,
         //+  USELESS TABLE
         //+++++++++++++++++
         donothing.apply();
-        
-        // Set IPV4
-        if (sume_metadata.meta_0[7:7] != 0){
 
-            //+++++++++++++++++
-            //+  SET ETHERNET
-            //+++++++++++++++++
-            p.ethernet.setValid();
-            p.ethernet.etherType = IPV4_TYPE;
-            p.ethernet.srcAddr = 48w0xAAAAAAAAAAAA;
-            p.ethernet.dstAddr = 48w0xBBBBBBBBBBBB;
+        //+++++++++++++++++
+        //+  SET ETHERNET
+        //+++++++++++++++++
+        p.ethernet.setValid();
+        p.ethernet.etherType = IPV4_TYPE;
+        p.ethernet.srcAddr = 48w0xAAAAAAAAAAAA;
+        p.ethernet.dstAddr = 48w0xBBBBBBBBBBBB;
 
-            //+++++++++++++++++
-            //+  SET IPV4
-            //+++++++++++++++++
-            p.ipv4.setValid();
-            p.ipv4.version = 4w4;
-            p.ipv4.ihl = 4w5;
-            p.ipv4.diffserv = 8w0; 
-            p.ipv4.totalLen = (sume_metadata.pkt_len + IPV4_SIZEB); 
-            p.ipv4.identification = 16w1; 
-            p.ipv4.flags = 3w0;
-            p.ipv4.fragOffset = 13w0; 
-            p.ipv4.ttl = 8w64;
-            p.ipv4.protocol = 8w0xAA; 
-            p.ipv4.hdrChecksum = 16w0xDEAD; 
-            p.ipv4.srcAddr = 32w0xA0AAAA0A; 
-            p.ipv4.dstAddr = 32w0xB0BBBB0B;
+        //+++++++++++++++++
+        //+  SET IPV4
+        //+++++++++++++++++
+        p.ipv4.setValid();
+        p.ipv4.version = 4w4;
+        p.ipv4.ihl = 4w5;
+        p.ipv4.diffserv = 8w0;
+        p.ipv4.totalLen = (sume_metadata.pkt_len + IPV4_SIZEB);
+        p.ipv4.identification = 16w1;
+        p.ipv4.flags = 3w0;
+        p.ipv4.fragOffset = 13w0;
+        p.ipv4.ttl = 8w64;
+        p.ipv4.protocol = 8w0xAA;
+        p.ipv4.hdrChecksum = 16w0xDEAD;
+        p.ipv4.srcAddr = 32w0xA0AAAA0A;
+        p.ipv4.dstAddr = 32w0xB0BBBB0B;
 
-            sume_metadata.pkt_len = sume_metadata.pkt_len + ETHERNET_SIZEB + IPV4_SIZEB;
-        
-        // Set Ethernet only    
-        }else{
-            
-            //+++++++++++++++++
-            //+  SET ETHERNET
-            //+++++++++++++++++
-            p.ethernet.setValid();
-            p.ethernet.etherType = CST_TYPE;
-            p.ethernet.srcAddr = 48w0xAAAAAAAAAAAA;
-            p.ethernet.dstAddr = 48w0xBBBBBBBBBBBB;
+        sume_metadata.pkt_len = sume_metadata.pkt_len + ETHERNET_SIZEB + IPV4_SIZEB;
 
-            sume_metadata.pkt_len = sume_metadata.pkt_len + ETHERNET_SIZEB;
-            
-        }
- 
         //+++++++++++++++++
         //+   SET PORTS
         //+++++++++++++++++
@@ -252,11 +222,11 @@ control TopDeparser_dbg(packet_out b,
                     in Parsed_packet p,
                     in user_metadata_t user_metadata,
                     inout digest_data_t digest_data,
-                    inout sume_metadata_t sume_metadata) { 
+                    inout sume_metadata_t sume_metadata) {
     apply {
 
         b.emit(p.ethernet);
-        b.emit(p.ipv4); 
+        b.emit(p.ipv4);
 
     } // apply
 
