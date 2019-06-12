@@ -3,10 +3,10 @@
 // Copyright (c) 2015 Noa Zilberman
 // All rights reserved.
 //
-// This software was developed by Stanford University and the University of Cambridge Computer Laboratory 
+// This software was developed by Stanford University and the University of Cambridge Computer Laboratory
 // under National Science Foundation under Grant No. CNS-0855268,
 // the University of Cambridge Computer Laboratory under EPSRC INTERNET Project EP/H040536/1 and
-// by the University of Cambridge Computer Laboratory under DARPA/AFRL contract FA8750-11-C-0249 ("MRC2"), 
+// by the University of Cambridge Computer Laboratory under DARPA/AFRL contract FA8750-11-C-0249 ("MRC2"),
 // as part of the DARPA MRC research programme.
 //
 //  File:
@@ -43,8 +43,8 @@
 
 module nf_datapath #(
     //Slave AXI parameters
-    parameter C_S_AXI_DATA_WIDTH    = 32,          
-    parameter C_S_AXI_ADDR_WIDTH    = 32,          
+    parameter C_S_AXI_DATA_WIDTH    = 32,
+    parameter C_S_AXI_ADDR_WIDTH    = 32,
     parameter C_BASEADDR            = 32'h00000000,
 
     // Master AXI Stream Data Width
@@ -81,7 +81,7 @@ module nf_datapath #(
     output     [1 :0]                         S0_AXI_BRESP,
     output                                    S0_AXI_BVALID,
     output                                    S0_AXI_AWREADY,
-    
+
     input      [C_S_AXI_ADDR_WIDTH-1 : 0]     S1_AXI_AWADDR,
     input                                     S1_AXI_AWVALID,
     input      [C_S_AXI_DATA_WIDTH-1 : 0]     S1_AXI_WDATA,
@@ -333,7 +333,7 @@ module nf_datapath #(
     output     [1 :0]                         S14_AXI_BRESP,
     output                                    S14_AXI_BVALID,
     output                                    S14_AXI_AWREADY,
-    
+
     // Slave Stream Ports (interface from Rx queues)
     input [C_S_AXIS_DATA_WIDTH - 1:0]         s_axis_0_tdata,
     input [((C_S_AXIS_DATA_WIDTH / 8)) - 1:0] s_axis_0_tkeep,
@@ -411,12 +411,12 @@ module nf_datapath #(
     //////////////////////////////////////////////////////////////////////////////////////
 
     localparam Q_SIZE_WIDTH = 16;
-    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf0_q_size; 
-    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf1_q_size; 
-    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf2_q_size; 
-    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf3_q_size; 
+    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf0_q_size;
+    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf1_q_size;
+    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf2_q_size;
+    (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    nf3_q_size;
     (* mark_debug = "true" *) wire [Q_SIZE_WIDTH-1:0]    dma_q_size;
-    
+
     //////////////////////////////////////////////////////////////////////////////////////
     ///             INTERNAL CONNECTIVITY
     //////////////////////////////////////////////////////////////////////////////////////
@@ -473,8 +473,8 @@ module nf_datapath #(
     ///             PACKET GENERATOR (PKTGEN)
     //////////////////////////////////////////////////////////////////////////////////////
 
-    pktgen_ip
-    pktgen_ip_inst(
+    nf_sume_pktgen_ip
+    nf_sume_pktgen_ip_inst(
 
       .axis_aclk              (axis_aclk),
       .axis_resetn            (axis_resetn),
@@ -506,7 +506,7 @@ module nf_datapath #(
       .S_AXI_BRESP            (S3_AXI_BRESP),
       .S_AXI_BVALID           (S3_AXI_BVALID),
       .S_AXI_AWREADY          (S3_AXI_AWREADY)
-      
+
       );
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -516,126 +516,126 @@ module nf_datapath #(
     nf_sume_sdnet_dbg_ip
     nf_sume_sdnet_dbg_inst(
 
-      .axis_aclk(axis_aclk), 
+      .axis_aclk(axis_aclk),
       .axis_resetn(axis_resetn),
 
-      .m_axis_tdata (dbg_ia_tdata), 
-      .m_axis_tkeep (dbg_ia_tkeep), 
-      .m_axis_tuser (dbg_ia_tuser), 
-      .m_axis_tvalid(dbg_ia_tvalid), 
-      .m_axis_tready(dbg_ia_tready), 
+      .m_axis_tdata (dbg_ia_tdata),
+      .m_axis_tkeep (dbg_ia_tkeep),
+      .m_axis_tuser (dbg_ia_tuser),
+      .m_axis_tvalid(dbg_ia_tvalid),
+      .m_axis_tready(dbg_ia_tready),
       .m_axis_tlast (dbg_ia_tlast),
 
-      .s_axis_tdata (pktg_dbg_tdata), 
-      .s_axis_tkeep (pktg_dbg_tkeep), 
+      .s_axis_tdata (pktg_dbg_tdata),
+      .s_axis_tkeep (pktg_dbg_tkeep),
       .s_axis_tuser ({dma_q_size, nf3_q_size, nf2_q_size, nf1_q_size, nf0_q_size, pktg_dbg_tuser[C_M_AXIS_TUSER_WIDTH+128-DIGEST_WIDTH-1:0]}), // +128 to include the metadata fields
-      .s_axis_tvalid(pktg_dbg_tvalid), 
-      .s_axis_tready(pktg_dbg_tready), 
+      .s_axis_tvalid(pktg_dbg_tvalid),
+      .s_axis_tready(pktg_dbg_tready),
       .s_axis_tlast (pktg_dbg_tlast),
 
-      .S_AXI_AWADDR(S5_AXI_AWADDR), 
+      .S_AXI_AWADDR(S5_AXI_AWADDR),
       .S_AXI_AWVALID(S5_AXI_AWVALID),
-      .S_AXI_WDATA(S5_AXI_WDATA),  
-      .S_AXI_WSTRB(S5_AXI_WSTRB),  
-      .S_AXI_WVALID(S5_AXI_WVALID), 
-      .S_AXI_BREADY(S5_AXI_BREADY), 
-      .S_AXI_ARADDR(S5_AXI_ARADDR), 
+      .S_AXI_WDATA(S5_AXI_WDATA),
+      .S_AXI_WSTRB(S5_AXI_WSTRB),
+      .S_AXI_WVALID(S5_AXI_WVALID),
+      .S_AXI_BREADY(S5_AXI_BREADY),
+      .S_AXI_ARADDR(S5_AXI_ARADDR),
       .S_AXI_ARVALID(S5_AXI_ARVALID),
-      .S_AXI_RREADY(S5_AXI_RREADY), 
+      .S_AXI_RREADY(S5_AXI_RREADY),
       .S_AXI_ARREADY(S5_AXI_ARREADY),
-      .S_AXI_RDATA(S5_AXI_RDATA),  
-      .S_AXI_RRESP(S5_AXI_RRESP),  
-      .S_AXI_RVALID(S5_AXI_RVALID), 
-      .S_AXI_WREADY(S5_AXI_WREADY), 
-      .S_AXI_BRESP(S5_AXI_BRESP),  
-      .S_AXI_BVALID(S5_AXI_BVALID), 
+      .S_AXI_RDATA(S5_AXI_RDATA),
+      .S_AXI_RRESP(S5_AXI_RRESP),
+      .S_AXI_RVALID(S5_AXI_RVALID),
+      .S_AXI_WREADY(S5_AXI_WREADY),
+      .S_AXI_BRESP(S5_AXI_BRESP),
+      .S_AXI_BVALID(S5_AXI_BVALID),
       .S_AXI_AWREADY(S5_AXI_AWREADY),
 
       .S_AXI_ACLK (axi_aclk),
       .S_AXI_ARESETN(axi_resetn)
 
-    ); 
+    );
 
     //////////////////////////////////////////////////////////////////////////////////////
     ///             INPUT ARBITER 6 INPUTS
     //////////////////////////////////////////////////////////////////////////////////////
 
-       input_arbiter_6in_ip 
+       input_arbiter_6in_ip
        input_arbiter_6in_ip_inst (
 
-            .axis_aclk(axis_aclk), 
-            .axis_resetn(axis_resetn), 
+            .axis_aclk(axis_aclk),
+            .axis_resetn(axis_resetn),
 
-            .m_axis_tdata (ia_ppl_tdata), 
-            .m_axis_tkeep (ia_ppl_tkeep), 
-            .m_axis_tuser (ia_ppl_tuser), 
-            .m_axis_tvalid(ia_ppl_tvalid), 
-            .m_axis_tready(ia_ppl_tready), 
-            .m_axis_tlast (ia_ppl_tlast), 
+            .m_axis_tdata (ia_ppl_tdata),
+            .m_axis_tkeep (ia_ppl_tkeep),
+            .m_axis_tuser (ia_ppl_tuser),
+            .m_axis_tvalid(ia_ppl_tvalid),
+            .m_axis_tready(ia_ppl_tready),
+            .m_axis_tlast (ia_ppl_tlast),
 
-            .s_axis_0_tdata (s_axis_0_tdata), 
-            .s_axis_0_tkeep (s_axis_0_tkeep), 
-            .s_axis_0_tuser (s_axis_0_tuser), 
-            .s_axis_0_tvalid(s_axis_0_tvalid), 
-            .s_axis_0_tready(s_axis_0_tready), 
+            .s_axis_0_tdata (s_axis_0_tdata),
+            .s_axis_0_tkeep (s_axis_0_tkeep),
+            .s_axis_0_tuser (s_axis_0_tuser),
+            .s_axis_0_tvalid(s_axis_0_tvalid),
+            .s_axis_0_tready(s_axis_0_tready),
             .s_axis_0_tlast (s_axis_0_tlast),
 
-            .s_axis_1_tdata (s_axis_1_tdata), 
-            .s_axis_1_tkeep (s_axis_1_tkeep), 
-            .s_axis_1_tuser (s_axis_1_tuser), 
-            .s_axis_1_tvalid(s_axis_1_tvalid), 
-            .s_axis_1_tready(s_axis_1_tready), 
-            .s_axis_1_tlast (s_axis_1_tlast), 
+            .s_axis_1_tdata (s_axis_1_tdata),
+            .s_axis_1_tkeep (s_axis_1_tkeep),
+            .s_axis_1_tuser (s_axis_1_tuser),
+            .s_axis_1_tvalid(s_axis_1_tvalid),
+            .s_axis_1_tready(s_axis_1_tready),
+            .s_axis_1_tlast (s_axis_1_tlast),
 
-            .s_axis_2_tdata (s_axis_2_tdata), 
-            .s_axis_2_tkeep (s_axis_2_tkeep), 
-            .s_axis_2_tuser (s_axis_2_tuser), 
-            .s_axis_2_tvalid(s_axis_2_tvalid), 
-            .s_axis_2_tready(s_axis_2_tready), 
-            .s_axis_2_tlast (s_axis_2_tlast), 
+            .s_axis_2_tdata (s_axis_2_tdata),
+            .s_axis_2_tkeep (s_axis_2_tkeep),
+            .s_axis_2_tuser (s_axis_2_tuser),
+            .s_axis_2_tvalid(s_axis_2_tvalid),
+            .s_axis_2_tready(s_axis_2_tready),
+            .s_axis_2_tlast (s_axis_2_tlast),
 
-            .s_axis_3_tdata (s_axis_3_tdata), 
-            .s_axis_3_tkeep (s_axis_3_tkeep), 
-            .s_axis_3_tuser (s_axis_3_tuser), 
-            .s_axis_3_tvalid(s_axis_3_tvalid), 
+            .s_axis_3_tdata (s_axis_3_tdata),
+            .s_axis_3_tkeep (s_axis_3_tkeep),
+            .s_axis_3_tuser (s_axis_3_tuser),
+            .s_axis_3_tvalid(s_axis_3_tvalid),
             .s_axis_3_tready(s_axis_3_tready),
             .s_axis_3_tlast (s_axis_3_tlast),
 
-            .s_axis_4_tdata (s_axis_4_tdata), 
-            .s_axis_4_tkeep (s_axis_4_tkeep), 
-            .s_axis_4_tuser (s_axis_4_tuser), 
-            .s_axis_4_tvalid(s_axis_4_tvalid), 
-            .s_axis_4_tready(s_axis_4_tready), 
+            .s_axis_4_tdata (s_axis_4_tdata),
+            .s_axis_4_tkeep (s_axis_4_tkeep),
+            .s_axis_4_tuser (s_axis_4_tuser),
+            .s_axis_4_tvalid(s_axis_4_tvalid),
+            .s_axis_4_tready(s_axis_4_tready),
             .s_axis_4_tlast (s_axis_4_tlast),
 
             // -
-            .s_axis_5_tdata (dbg_ia_tdata), 
-            .s_axis_5_tkeep (dbg_ia_tkeep), 
-            .s_axis_5_tuser (dbg_ia_tuser), 
-            .s_axis_5_tvalid(dbg_ia_tvalid), 
-            .s_axis_5_tready(dbg_ia_tready), 
+            .s_axis_5_tdata (dbg_ia_tdata),
+            .s_axis_5_tkeep (dbg_ia_tkeep),
+            .s_axis_5_tuser (dbg_ia_tuser),
+            .s_axis_5_tvalid(dbg_ia_tvalid),
+            .s_axis_5_tready(dbg_ia_tready),
             .s_axis_5_tlast (dbg_ia_tlast),
 
-            .S_AXI_AWADDR(S0_AXI_AWADDR), 
+            .S_AXI_AWADDR(S0_AXI_AWADDR),
             .S_AXI_AWVALID(S0_AXI_AWVALID),
-            .S_AXI_WDATA(S0_AXI_WDATA),  
-            .S_AXI_WSTRB(S0_AXI_WSTRB),  
-            .S_AXI_WVALID(S0_AXI_WVALID), 
-            .S_AXI_BREADY(S0_AXI_BREADY), 
-            .S_AXI_ARADDR(S0_AXI_ARADDR), 
+            .S_AXI_WDATA(S0_AXI_WDATA),
+            .S_AXI_WSTRB(S0_AXI_WSTRB),
+            .S_AXI_WVALID(S0_AXI_WVALID),
+            .S_AXI_BREADY(S0_AXI_BREADY),
+            .S_AXI_ARADDR(S0_AXI_ARADDR),
             .S_AXI_ARVALID(S0_AXI_ARVALID),
-            .S_AXI_RREADY(S0_AXI_RREADY), 
+            .S_AXI_RREADY(S0_AXI_RREADY),
             .S_AXI_ARREADY(S0_AXI_ARREADY),
-            .S_AXI_RDATA(S0_AXI_RDATA),  
-            .S_AXI_RRESP(S0_AXI_RRESP),  
-            .S_AXI_RVALID(S0_AXI_RVALID), 
-            .S_AXI_WREADY(S0_AXI_WREADY), 
-            .S_AXI_BRESP(S0_AXI_BRESP),  
-            .S_AXI_BVALID(S0_AXI_BVALID), 
+            .S_AXI_RDATA(S0_AXI_RDATA),
+            .S_AXI_RRESP(S0_AXI_RRESP),
+            .S_AXI_RVALID(S0_AXI_RVALID),
+            .S_AXI_WREADY(S0_AXI_WREADY),
+            .S_AXI_BRESP(S0_AXI_BRESP),
+            .S_AXI_BVALID(S0_AXI_BVALID),
             .S_AXI_AWREADY(S0_AXI_AWREADY),
-            .S_AXI_ACLK (axi_aclk), 
+            .S_AXI_ACLK (axi_aclk),
             .S_AXI_ARESETN(axi_resetn),
-            .pkt_fwd() 
+            .pkt_fwd()
           );
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -646,39 +646,39 @@ module nf_datapath #(
     output_port_lookup_ip_inst
     (
 
-      .axis_aclk(axis_aclk), 
-      .axis_resetn(axis_resetn), 
+      .axis_aclk(axis_aclk),
+      .axis_resetn(axis_resetn),
 
-      .m_axis_tdata (ppl_splt_tdata), 
-      .m_axis_tkeep (ppl_splt_tkeep), 
-      .m_axis_tuser (ppl_splt_tuser), 
-      .m_axis_tvalid(ppl_splt_tvalid), 
-      .m_axis_tready(ppl_splt_tready), 
-      .m_axis_tlast (ppl_splt_tlast), 
+      .m_axis_tdata (ppl_splt_tdata),
+      .m_axis_tkeep (ppl_splt_tkeep),
+      .m_axis_tuser (ppl_splt_tuser),
+      .m_axis_tvalid(ppl_splt_tvalid),
+      .m_axis_tready(ppl_splt_tready),
+      .m_axis_tlast (ppl_splt_tlast),
 
-      .s_axis_tdata (ia_ppl_tdata), 
-      .s_axis_tkeep (ia_ppl_tkeep), 
+      .s_axis_tdata (ia_ppl_tdata),
+      .s_axis_tkeep (ia_ppl_tkeep),
       .s_axis_tuser ({dma_q_size, nf3_q_size, nf2_q_size, nf1_q_size, nf0_q_size, ia_ppl_tuser[C_M_AXIS_TUSER_WIDTH+128-DIGEST_WIDTH-1:0]}), // +128 to include the metadata fields
-      .s_axis_tvalid(ia_ppl_tvalid), 
-      .s_axis_tready(ia_ppl_tready), 
+      .s_axis_tvalid(ia_ppl_tvalid),
+      .s_axis_tready(ia_ppl_tready),
       .s_axis_tlast (ia_ppl_tlast),
 
-      .S_AXI_AWADDR(S1_AXI_AWADDR), 
+      .S_AXI_AWADDR(S1_AXI_AWADDR),
       .S_AXI_AWVALID(S1_AXI_AWVALID),
-      .S_AXI_WDATA(S1_AXI_WDATA),  
-      .S_AXI_WSTRB(S1_AXI_WSTRB),  
-      .S_AXI_WVALID(S1_AXI_WVALID), 
-      .S_AXI_BREADY(S1_AXI_BREADY), 
-      .S_AXI_ARADDR(S1_AXI_ARADDR), 
+      .S_AXI_WDATA(S1_AXI_WDATA),
+      .S_AXI_WSTRB(S1_AXI_WSTRB),
+      .S_AXI_WVALID(S1_AXI_WVALID),
+      .S_AXI_BREADY(S1_AXI_BREADY),
+      .S_AXI_ARADDR(S1_AXI_ARADDR),
       .S_AXI_ARVALID(S1_AXI_ARVALID),
-      .S_AXI_RREADY(S1_AXI_RREADY), 
+      .S_AXI_RREADY(S1_AXI_RREADY),
       .S_AXI_ARREADY(S1_AXI_ARREADY),
-      .S_AXI_RDATA(S1_AXI_RDATA),  
-      .S_AXI_RRESP(S1_AXI_RRESP),  
-      .S_AXI_RVALID(S1_AXI_RVALID), 
-      .S_AXI_WREADY(S1_AXI_WREADY), 
-      .S_AXI_BRESP(S1_AXI_BRESP),  
-      .S_AXI_BVALID(S1_AXI_BVALID), 
+      .S_AXI_RDATA(S1_AXI_RDATA),
+      .S_AXI_RRESP(S1_AXI_RRESP),
+      .S_AXI_RVALID(S1_AXI_RVALID),
+      .S_AXI_WREADY(S1_AXI_WREADY),
+      .S_AXI_BRESP(S1_AXI_BRESP),
+      .S_AXI_BVALID(S1_AXI_BVALID),
       .S_AXI_AWREADY(S1_AXI_AWREADY),
 
       .S_AXI_ACLK (axi_aclk),
@@ -692,7 +692,7 @@ module nf_datapath #(
 
     splt_ip
     splt_ip_inst  (
-    
+
     // Global Ports
     .axis_aclk   (axis_aclk),
     .axis_resetn (axis_resetn),
@@ -740,7 +740,7 @@ module nf_datapath #(
     .S_AXI_AWREADY       (S8_AXI_AWREADY)
 
     );
- 
+
     //////////////////////////////////////////////////////////////////////////////////////
     ///             VERIFIER PIPELINE (VER)
     //////////////////////////////////////////////////////////////////////////////////////
@@ -748,101 +748,101 @@ module nf_datapath #(
     nf_sume_sdnet_ver_ip
     nf_sume_sdnet_ver_inst  (
 
-      .axis_aclk(axis_aclk), 
-      .axis_resetn(axis_resetn), 
+      .axis_aclk(axis_aclk),
+      .axis_resetn(axis_resetn),
 
-      .m_axis_tdata (/*N.C.*/), 
-      .m_axis_tkeep (/*N.C.*/), 
-      .m_axis_tuser (/*N.C.*/), 
-      .m_axis_tvalid(/*N.C.*/), 
+      .m_axis_tdata (/*N.C.*/),
+      .m_axis_tkeep (/*N.C.*/),
+      .m_axis_tuser (/*N.C.*/),
+      .m_axis_tvalid(/*N.C.*/),
       .m_axis_tready(1'b1),
-      .m_axis_tlast (/*N.C.*/), 
+      .m_axis_tlast (/*N.C.*/),
 
-      .s_axis_tdata (splt_ver_tdata), 
-      .s_axis_tkeep (splt_ver_tkeep), 
+      .s_axis_tdata (splt_ver_tdata),
+      .s_axis_tkeep (splt_ver_tkeep),
       .s_axis_tuser ({dma_q_size, nf3_q_size, nf2_q_size, nf1_q_size, nf0_q_size, splt_ver_tuser[C_M_AXIS_TUSER_WIDTH+128-DIGEST_WIDTH-1:0]}), // +128 to include the metadata fields
-      .s_axis_tvalid(splt_ver_tvalid), 
-      .s_axis_tready(splt_ver_tready), 
+      .s_axis_tvalid(splt_ver_tvalid),
+      .s_axis_tready(splt_ver_tready),
       .s_axis_tlast (splt_ver_tlast),
 
-      .S_AXI_AWADDR(S7_AXI_AWADDR), 
+      .S_AXI_AWADDR(S7_AXI_AWADDR),
       .S_AXI_AWVALID(S7_AXI_AWVALID),
-      .S_AXI_WDATA(S7_AXI_WDATA),  
-      .S_AXI_WSTRB(S7_AXI_WSTRB),  
-      .S_AXI_WVALID(S7_AXI_WVALID), 
-      .S_AXI_BREADY(S7_AXI_BREADY), 
-      .S_AXI_ARADDR(S7_AXI_ARADDR), 
+      .S_AXI_WDATA(S7_AXI_WDATA),
+      .S_AXI_WSTRB(S7_AXI_WSTRB),
+      .S_AXI_WVALID(S7_AXI_WVALID),
+      .S_AXI_BREADY(S7_AXI_BREADY),
+      .S_AXI_ARADDR(S7_AXI_ARADDR),
       .S_AXI_ARVALID(S7_AXI_ARVALID),
-      .S_AXI_RREADY(S7_AXI_RREADY), 
+      .S_AXI_RREADY(S7_AXI_RREADY),
       .S_AXI_ARREADY(S7_AXI_ARREADY),
-      .S_AXI_RDATA(S7_AXI_RDATA),  
-      .S_AXI_RRESP(S7_AXI_RRESP),  
-      .S_AXI_RVALID(S7_AXI_RVALID), 
-      .S_AXI_WREADY(S7_AXI_WREADY), 
-      .S_AXI_BRESP(S7_AXI_BRESP),  
-      .S_AXI_BVALID(S7_AXI_BVALID), 
+      .S_AXI_RDATA(S7_AXI_RDATA),
+      .S_AXI_RRESP(S7_AXI_RRESP),
+      .S_AXI_RVALID(S7_AXI_RVALID),
+      .S_AXI_WREADY(S7_AXI_WREADY),
+      .S_AXI_BRESP(S7_AXI_BRESP),
+      .S_AXI_BVALID(S7_AXI_BVALID),
       .S_AXI_AWREADY(S7_AXI_AWREADY),
 
       .S_AXI_ACLK (axi_aclk),
       .S_AXI_ARESETN(axi_resetn)
 
-    ); 
+    );
 
     //////////////////////////////////////////////////////////////////////////////////////
     ///             OUTPUT QUEUES (OQS)
-    //////////////////////////////////////////////////////////////////////////////////////       
+    //////////////////////////////////////////////////////////////////////////////////////
 
     (* mark_debug = "true" *) wire [C_S_AXI_DATA_WIDTH-1:0] bytes_dropped;
-    (* mark_debug = "true" *) wire [5-1:0] pkt_dropped; 
+    (* mark_debug = "true" *) wire [5-1:0] pkt_dropped;
 
     //Output queues
-    output_queues_ip  
+    output_queues_ip
     output_queues_inst (
 
-      .axis_aclk(axis_aclk), 
-      .axis_resetn(axis_resetn), 
+      .axis_aclk(axis_aclk),
+      .axis_resetn(axis_resetn),
 
-      .s_axis_tdata   (splt_oqs_tdata), 
-      .s_axis_tkeep   (splt_oqs_tkeep), 
-      .s_axis_tuser   (splt_oqs_tuser), 
-      .s_axis_tvalid  (splt_oqs_tvalid), 
-      .s_axis_tready  (splt_oqs_tready), 
+      .s_axis_tdata   (splt_oqs_tdata),
+      .s_axis_tkeep   (splt_oqs_tkeep),
+      .s_axis_tuser   (splt_oqs_tuser),
+      .s_axis_tvalid  (splt_oqs_tvalid),
+      .s_axis_tready  (splt_oqs_tready),
       .s_axis_tlast   (splt_oqs_tlast),
 
-      .m_axis_0_tdata (m_axis_0_tdata), 
-      .m_axis_0_tkeep (m_axis_0_tkeep), 
-      .m_axis_0_tuser (m_axis_0_tuser), 
-      .m_axis_0_tvalid(m_axis_0_tvalid), 
-      .m_axis_0_tready(m_axis_0_tready), 
+      .m_axis_0_tdata (m_axis_0_tdata),
+      .m_axis_0_tkeep (m_axis_0_tkeep),
+      .m_axis_0_tuser (m_axis_0_tuser),
+      .m_axis_0_tvalid(m_axis_0_tvalid),
+      .m_axis_0_tready(m_axis_0_tready),
       .m_axis_0_tlast (m_axis_0_tlast),
 
-      .m_axis_1_tdata (m_axis_1_tdata), 
-      .m_axis_1_tkeep (m_axis_1_tkeep), 
-      .m_axis_1_tuser (m_axis_1_tuser), 
-      .m_axis_1_tvalid(m_axis_1_tvalid), 
-      .m_axis_1_tready(m_axis_1_tready), 
+      .m_axis_1_tdata (m_axis_1_tdata),
+      .m_axis_1_tkeep (m_axis_1_tkeep),
+      .m_axis_1_tuser (m_axis_1_tuser),
+      .m_axis_1_tvalid(m_axis_1_tvalid),
+      .m_axis_1_tready(m_axis_1_tready),
       .m_axis_1_tlast (m_axis_1_tlast),
 
-      .m_axis_2_tdata (m_axis_2_tdata), 
-      .m_axis_2_tkeep (m_axis_2_tkeep), 
-      .m_axis_2_tuser (m_axis_2_tuser), 
-      .m_axis_2_tvalid(m_axis_2_tvalid), 
-      .m_axis_2_tready(m_axis_2_tready), 
+      .m_axis_2_tdata (m_axis_2_tdata),
+      .m_axis_2_tkeep (m_axis_2_tkeep),
+      .m_axis_2_tuser (m_axis_2_tuser),
+      .m_axis_2_tvalid(m_axis_2_tvalid),
+      .m_axis_2_tready(m_axis_2_tready),
       .m_axis_2_tlast (m_axis_2_tlast),
 
-      .m_axis_3_tdata (m_axis_3_tdata), 
-      .m_axis_3_tkeep (m_axis_3_tkeep), 
-      .m_axis_3_tuser (m_axis_3_tuser), 
-      .m_axis_3_tvalid(m_axis_3_tvalid), 
-      .m_axis_3_tready(m_axis_3_tready), 
+      .m_axis_3_tdata (m_axis_3_tdata),
+      .m_axis_3_tkeep (m_axis_3_tkeep),
+      .m_axis_3_tuser (m_axis_3_tuser),
+      .m_axis_3_tvalid(m_axis_3_tvalid),
+      .m_axis_3_tready(m_axis_3_tready),
       .m_axis_3_tlast (m_axis_3_tlast),
 
-      .m_axis_4_tdata (m_axis_4_tdata), 
-      .m_axis_4_tkeep (m_axis_4_tkeep), 
-      .m_axis_4_tuser (m_axis_4_tuser), 
-      .m_axis_4_tvalid(m_axis_4_tvalid), 
-      .m_axis_4_tready(m_axis_4_tready), 
-      .m_axis_4_tlast (m_axis_4_tlast), 
+      .m_axis_4_tdata (m_axis_4_tdata),
+      .m_axis_4_tkeep (m_axis_4_tkeep),
+      .m_axis_4_tuser (m_axis_4_tuser),
+      .m_axis_4_tvalid(m_axis_4_tvalid),
+      .m_axis_4_tready(m_axis_4_tready),
+      .m_axis_4_tlast (m_axis_4_tlast),
 
       //.nf0_q_size(nf0_q_size),
       //.nf1_q_size(nf1_q_size),
@@ -850,42 +850,42 @@ module nf_datapath #(
       //.nf3_q_size(nf3_q_size),
       //.dma_q_size(dma_q_size),
 
-      .bytes_stored(), 
-      .pkt_stored(), 
-      .bytes_removed_0(), 
-      .bytes_removed_1(), 
-      .bytes_removed_2(), 
-      .bytes_removed_3(), 
-      .bytes_removed_4(), 
-      .pkt_removed_0(), 
-      .pkt_removed_1(), 
-      .pkt_removed_2(), 
-      .pkt_removed_3(), 
-      .pkt_removed_4(), 
+      .bytes_stored(),
+      .pkt_stored(),
+      .bytes_removed_0(),
+      .bytes_removed_1(),
+      .bytes_removed_2(),
+      .bytes_removed_3(),
+      .bytes_removed_4(),
+      .pkt_removed_0(),
+      .pkt_removed_1(),
+      .pkt_removed_2(),
+      .pkt_removed_3(),
+      .pkt_removed_4(),
 
-      .S_AXI_AWADDR(S2_AXI_AWADDR), 
+      .S_AXI_AWADDR(S2_AXI_AWADDR),
       .S_AXI_AWVALID(S2_AXI_AWVALID),
-      .S_AXI_WDATA(S2_AXI_WDATA),  
-      .S_AXI_WSTRB(S2_AXI_WSTRB),  
-      .S_AXI_WVALID(S2_AXI_WVALID), 
-      .S_AXI_BREADY(S2_AXI_BREADY), 
-      .S_AXI_ARADDR(S2_AXI_ARADDR), 
+      .S_AXI_WDATA(S2_AXI_WDATA),
+      .S_AXI_WSTRB(S2_AXI_WSTRB),
+      .S_AXI_WVALID(S2_AXI_WVALID),
+      .S_AXI_BREADY(S2_AXI_BREADY),
+      .S_AXI_ARADDR(S2_AXI_ARADDR),
       .S_AXI_ARVALID(S2_AXI_ARVALID),
-      .S_AXI_RREADY(S2_AXI_RREADY), 
+      .S_AXI_RREADY(S2_AXI_RREADY),
       .S_AXI_ARREADY(S2_AXI_ARREADY),
-      .S_AXI_RDATA(S2_AXI_RDATA),  
-      .S_AXI_RRESP(S2_AXI_RRESP),  
-      .S_AXI_RVALID(S2_AXI_RVALID), 
-      .S_AXI_WREADY(S2_AXI_WREADY), 
-      .S_AXI_BRESP(S2_AXI_BRESP),  
-      .S_AXI_BVALID(S2_AXI_BVALID), 
+      .S_AXI_RDATA(S2_AXI_RDATA),
+      .S_AXI_RRESP(S2_AXI_RRESP),
+      .S_AXI_RVALID(S2_AXI_RVALID),
+      .S_AXI_WREADY(S2_AXI_WREADY),
+      .S_AXI_BRESP(S2_AXI_BRESP),
+      .S_AXI_BVALID(S2_AXI_BVALID),
       .S_AXI_AWREADY(S2_AXI_AWREADY),
-      .S_AXI_ACLK (axi_aclk), 
+      .S_AXI_ACLK (axi_aclk),
       .S_AXI_ARESETN(axi_resetn),
 
-      .bytes_dropped(bytes_dropped), 
+      .bytes_dropped(bytes_dropped),
       .pkt_dropped(pkt_dropped)
 
-    ); 
+    );
 
 endmodule
