@@ -2,10 +2,10 @@
 # Copyright (c) 2015 Noa Zilberman, Jingyun Zhang
 # All rights reserved.
 #
-# This software was developed by Stanford University and the University of Cambridge Computer Laboratory 
+# This software was developed by Stanford University and the University of Cambridge Computer Laboratory
 # under National Science Foundation under Grant No. CNS-0855268,
 # the University of Cambridge Computer Laboratory under EPSRC INTERNET Project EP/H040536/1 and
-# by the University of Cambridge Computer Laboratory under DARPA/AFRL contract FA8750-11-C-0249 ("MRC2"), 
+# by the University of Cambridge Computer Laboratory under DARPA/AFRL contract FA8750-11-C-0249 ("MRC2"),
 # as part of the DARPA MRC research programme.
 #
 # @NETFPGA_LICENSE_HEADER_START@
@@ -30,11 +30,6 @@
 # The following list include all the items that are mapped to memory segments
 # The structure of each item is as follows {<Prefix name> <ID> <has registers> <library name> <is contrib>}
 
-#	{DEMUX 0 1 nf_sume_demux_v1_0_0/data/demux_regs_defines.txt 1} \
-#	{VERCON 0 1 nf_sume_vercon_v1_0_0/data/vercon_regs_defines.txt 1} \
-#	{VERFIFO 0 1 nf_sume_verfifo_v1_0_0/data/verfifo_regs_defines.txt 1} \
-#	{RH 0 1 nf_sume_rh_v1_0_0/data/rh_regs_defines.txt 1} \
-
 set DEF_LIST {
 	{MICROBLAZE_AXI_IIC 0 0 "" 0} \
 	{MICROBLAZE_UARTLITE 0 0 "" 0} \
@@ -49,11 +44,10 @@ set DEF_LIST {
 	{NF_10G_INTERFACE2 2 1 nf_10ge_interface_v1_0_0/data/nf_10g_interface_regs_defines.txt 0} \
 	{NF_10G_INTERFACE3 3 1 nf_10ge_interface_v1_0_0/data/nf_10g_interface_regs_defines.txt 0} \
 	{NF_RIFFA_DMA 0 1 nf_riffa_dma_v1_0_0/data/nf_riffa_dma_regs_defines.txt 0} \
-	{IPG 0 1 nf_sume_ipg_v1_0_0/data/ipg_regs_defines.txt 1} \
+	{IPG 0 1 nf_sume_pktgen_v1_0_0/data/nf_sume_pktgen_regs_defines.txt 1} \
 	{DBG 0 1 switch_output_port_lookup_v1_0_1/data/output_port_lookup_regs_defines.txt 0} \
 	{VER 0 1 switch_output_port_lookup_v1_0_1/data/output_port_lookup_regs_defines.txt 0} \
 	{SPLT 0 1 nf_sume_splt_v1_0_0/data/splt_regs_defines.txt 1} \
-	{MOD 0 1 nf_sume_mod_v1_0_0/data/mod_regs_defines.txt 1} \
 
 }
 
@@ -107,7 +101,7 @@ puts $h_file "// This is an automatically generated header definitions file"
 puts $h_file "/////////////////////////////////////////////////////////////////////////////////"
 puts $h_file ""
 
-close $h_file 
+close $h_file
 
 }; # end of proc write_header
 
@@ -159,7 +153,7 @@ if {$has_registers} {
 	}
 }
 puts $h_file ""
-close $h_file 
+close $h_file
 }; # end of proc write_core
 
 
@@ -170,14 +164,8 @@ close $h_file
 
 
 
-write_header  $target_file 
+write_header  $target_file
 
-foreach lib_item $DEF_LIST { 
+foreach lib_item $DEF_LIST {
      write_core  $target_file [lindex $lib_item 0] [lindex $lib_item 1] [lindex $lib_item 2] [lindex $lib_item 3] [lindex $lib_item 4]
 }
-
-
-
-
-
-
