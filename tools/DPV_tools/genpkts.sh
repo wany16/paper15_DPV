@@ -86,8 +86,8 @@ while true; do
     -b) BURSTLEN="$2"; shift; shift ;;
     -f) VALFLAGS="$2"; shift; shift ;;
     -g) GAPLEN="$2"; shift; shift ;;
-    -p) PKTSIZE="$2"; shift; shift ;; 
-    -s) HDRSIZE="$2"; shift; shift ;; 
+    -p) PKTSIZE="$2"; shift; shift ;;
+    -s) HDRSIZE="$2"; shift; shift ;;
     --m1) META[1]="$2"; shift; shift ;;
     --m2) META[2]="$2"; shift; shift ;;
     --m3) META[3]="$2"; shift; shift ;;
@@ -129,12 +129,12 @@ done
 ### user specifies ports as: NF0, NF3, BRA, BR0, BR3, DMA, ...
 ###############################################################
 
-cd ${SUME_FOLDER}/tools/-_tools/
+cd ${SUME_FOLDER}/tools/DPV_tools/
 
 echo > flags.txt
 
 # Compute FLAGS, passing VALFLAGS to a python script
-python ${SUME_FOLDER}/tools/-_tools/set_flags.py ${VALFLAGS}
+python ${SUME_FOLDER}/tools/DPV_tools/set_flags.py ${VALFLAGS}
 
 SETFLAGS=( $(<flags.txt) )
 
@@ -293,7 +293,7 @@ do
   elif [[ "$REQMETATYPE" == "H" || "$REQMETATYPE" == "h" ]]; then
 
     # 0x PREFIX ATTACHED TO VALUE
-    VALMETA[$index]=\0\x$REQMETAVAL    
+    VALMETA[$index]=\0\x$REQMETAVAL
 
   else
 
@@ -313,13 +313,13 @@ done # for loop
 
 PAYSIZE=$((PKTSIZE - HDRSIZE))
 
-cd ${SUME_FOLDER}/tools/-_tools/
+cd ${SUME_FOLDER}/tools/DPV_tools/
 
 echo > tkeep.txt
 echo > sizeinfo.txt
 
 # Compute SIZEINFO & TKEEP, passing PAYSIZE to a python script
-python ${SUME_FOLDER}/tools/-_tools/compute_params.py ${PAYSIZE}
+python ${SUME_FOLDER}/tools/DPV_tools/compute_params.py ${PAYSIZE}
 
 TKEEP=( $(<tkeep.txt) )
 SIZEINFO=( $(<sizeinfo.txt) )
@@ -362,7 +362,7 @@ echo "--------------------------------------------------"
 echo ""
 echo ""
 
-cd ${SUME_FOLDER}/tools/-_tools/
+cd ${SUME_FOLDER}/tools/DPV_tools/
 
 echo "BURST" ${BURSTLEN} >> gen_report.txt
 echo "GAP" ${IPGGAP} >> gen_report.txt
